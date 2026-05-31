@@ -1,15 +1,77 @@
-LimbusAutomation
+# LimbusAutomation
 
-Lightweight, pure-software automation toolkit for Limbus Company (PC/Steam).
+本项目旨在开发一套专用于《边狱巴士》（Limbus Company）镜像迷宫的**轻量化、纯软件**自动化脚本。项目核心侧重于高精度的图像状态机识别与极其严格的驱动级防检测反制。
 
-Features:
-- Vision helpers (OpenCV)
-- Input control (pydirectinput) with human-like mouse movement
-- FSM-driven workflow
+---
 
-Setup:
-python -m venv .venv
-.\.venv\Scripts\activate
-pip install -r requirements.txt
+## 🎯 项目核心目标
 
-See src/limbus_automation for code.
+* **全自动镜像迷宫：** 实现从关卡选择、战斗整备、战斗内技能释放到结算奖励的全流程闭环。
+* **轻量与纯软化：** 拒绝笨重的模拟器多开挂机，直接针对 Windows 原生 Steam 客户端进行轻量化底层控制。
+* **极致安全（Anti-Detection）：** 将“对抗游戏检测”作为第一优先级，通过底层拟真技术，最大程度模拟真人玩家行为。
+
+---
+
+## 🏗 核心技术架构
+
+项目整体由三个核心模块构成，形成一个闭环控制系统：
+
+### 1. 图像识别与决策中心（The "Eyes" & "Brain"）
+
+* **技术选型：** OpenCV + NumPy + Pillow
+* **核心逻辑：** * 通过高频低耗的屏幕画面捕获，利用**模板匹配（Template Matching）**和**特定色彩通道分析**识别当前游戏状态（如：迷宫房间类型、我方人格存活状态、技能连线界面）。
+* 构建**有限状态机（FSM）**，确保脚本在游戏断线重连、卡顿、意外弹窗等异常情况下拥有强鲁棒性，能够自主重置逻辑。
+
+
+
+### 2. 驱动级拟真输入（The "Hands"）
+
+由于 Unity 引擎对常规操作系统的虚拟鼠标点击有天然的屏蔽和行为审计，本项目采用底层对抗方案：
+
+* **输入控制：** 采用 `pydirectinput` 或更底层的**虚拟输入驱动（如 DD/Keymouse 驱动级 API）**，直接向系统发送硬件扫描码（Scan Codes），绕过游戏对常规软件模拟的拦截。
+* **行为拟真：** * **贝塞尔鼠标轨迹（Bezier Curves）：** 拒绝坐标点瞬移，鼠标移动必须具备平滑的加速度与减速度轨迹。
+* **随机化延迟（Randomized Latency）：** 所有的操作间隔、点击按压时长均引入正态分布的随机扰动，杜绝固定频率操作。
+
+
+
+### 3. AI 辅助开发架构（The "Copilot"）
+
+* **工具链：** VS Code + Github Copilot
+* **协作模式：** * 利用 OpenClaw 聚合多大模型能力，动态路由请求。
+* **高级模型（如 Claude 3.5 Sonnet）：** 负责核心状态机逻辑设计、反检测算法优化及复杂 Bug 破局。
+* **轻量模型（如 DeepSeek）：** 负责常规代码补全、文档生成与基础语法排查，最大化开发效率并控制 Token 成本。
+
+
+
+---
+
+## 📅 阶段性开发计划
+
+* [ ] **Phase 1：输入与输出流验证**
+* 实现稳定的原生窗口截图与色彩提取。
+* 测试驱动级鼠标点击在游戏客户端内的有效性。
+
+
+* [ ] **Phase 2：UI 状态机构建**
+* 录入各类大厅、迷宫节点、整备界面的特征图。
+* 完成基础的非战斗状态跳转逻辑。
+
+
+* [ ] **Phase 3：战斗逻辑与策略**
+* 识别不同技能的属性与顺位。
+* 实现基础的拼点胜率判断（如优先选择“极高”胜率连线）。
+
+
+* [ ] **Phase 4：防检测红线测试**
+* 引入长期挂机下的随机行为扰动。
+* 监控游戏账号安全状态，压榨安全策略。
+
+
+
+---
+
+## 📜 开发者规范
+
+1. **Windows 独占运行：** 脚本执行环境严格锁定为 Windows 平台，禁止引入任何平台特异性（如 Mac/Linux）的系统调用。
+2. **版本控制：** 每一阶段的状态机跳转逻辑调通后，必须进行 `git commit`，保持架构可追溯。
+3. **参数解耦：** 所有的坐标、阈值、延迟基准必须统一写在 `config.py` 中，严禁在 `main.py` 中硬编码。

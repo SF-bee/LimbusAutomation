@@ -16,3 +16,6 @@ Thumbs.db
 .coverage
 htmlcov/
 *.egg-info/
+
+#Github
+.github/

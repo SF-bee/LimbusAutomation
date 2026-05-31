@@ -3,11 +3,21 @@ from typing import Optional, Tuple
 import cv2
 import numpy as np
 from PIL import ImageGrab
-
+import os
+from . import config
 
 def capture_screen() -> np.ndarray:
     """Capture the whole screen and return BGR numpy array."""
+    # Note: ImageGrab.grab() is a bit slow, but works for basic needs.
+    # For higher performance, we might consider Win32 API later.
     img = ImageGrab.grab()
+    # Convert PIL image to numpy array and then to BGR (OpenCV format)
+    return cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
+
+def get_screen_size() -> Tuple[int, int]:
+    """Return the screen resolution from config."""
+    return config.SCREEN_WIDTH, config.SCREEN_HEIGHT
+
     arr = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
     return arr
 
